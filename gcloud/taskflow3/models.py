@@ -569,10 +569,13 @@ class TaskFlowInstanceManager(models.Manager, managermixins.ClassificationCountM
             # 获得参数中的标准插件code
             component_code = filters.get("component_code")
             # 获取到组件code对应的instance_id_list
-            instance_id_list = ComponentExecuteData.objects.filter(is_sub=False)
-            # 对code进行二次查找
-            instance_id_list = instance_id_list.filter(component_code=component_code).distinct().values_list(
-                "instance_id")
+            if component_code:
+                # 对code进行二次查找
+                instance_id_list = ComponentExecuteData.objects.filter(is_sub=False).filter(
+                    component_code=component_code).distinct().values_list(
+                    "instance_id")
+            else:
+                instance_id_list = ComponentExecuteData.objects.all().values_list("instance_id")
             taskflow_list = taskflow.filter(pipeline_instance__instance_id__in=instance_id_list).values(
                 'id',
                 'business__cc_id',
