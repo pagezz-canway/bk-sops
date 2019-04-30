@@ -48,6 +48,65 @@
         </div>
         <div class="content-process-detail">
             <bk-tab :type="'fill'" :active-name="tabName" @tab-changed="onChangeTabPanel">
+                <bk-tabpanel name="executionTime" :title="i18n.executionTime">
+                    <div class="content-wrap-detail">
+                        <div class="content-wrap-from">
+                            <div class="content-wrap-select">
+                                <label class="content-detail-label">{{i18n.taskStartTime}}</label>
+                                <bk-date-range
+                                    :quick-select="true"
+                                    :start-date="tableStartTime"
+                                    :end-date="tableEndTime"
+                                    :end-date-max="endDateMax"
+                                    @change="onAtomExecuteData">
+                                </bk-date-range>
+                            </div>
+                            <div class="content-wrap-select">
+                                <label class="content-detail-label">{{i18n.choiceBusiness}}</label>
+                                <bk-selector
+                                    :list="allBusinessList"
+                                    :display-key="'cc_name'"
+                                    :setting-name="'cc_id'"
+                                    :search-key="'cc_name'"
+                                    :setting-key="'cc_id'"
+                                    :selected.sync="selectedCcId"
+                                    :placeholder="i18n.choice"
+                                    :searchable="true"
+                                    :allow-clear="true"
+                                    @change="onAtomExecuteData"
+                                    @clear="onClearBizCcId"
+                                    @item-selected="onSelectedBizCcId">
+                                </bk-selector>
+                            </div>
+                            <div class="content-wrap-select">
+                                <label class="content-detail-label">{{i18n.choiceCategory}}</label>
+                                <bk-selector
+                                    :list="categorys"
+                                    :display-key="'name'"
+                                    :setting-name="'value'"
+                                    :search-key="'name'"
+                                    :setting-key="'value'"
+                                    :selected.sync="selectedCategory"
+                                    :placeholder="i18n.choice"
+                                    :searchable="true"
+                                    :allow-clear="true"
+                                    @change="onAtomExecuteData"
+                                    @clear="onClearCategory"
+                                    @item-selected="onSelectedCategory">
+                                </bk-selector>
+                            </div>
+                        </div>
+                        <data-table-pagination
+                            :data="executeData"
+                            :total="executeTotal"
+                            :columns="executeColumns"
+                            :pagination="executePagination"
+                            :loading="isExecutionLoading"
+                            @handleSizeChange="onExecuteHandleSizeChange"
+                            @handleIndexChange="onExecuteHandleIndexChange">
+                        </data-table-pagination>
+                    </div>
+                </bk-tabpanel>
                 <bk-tabpanel name="processDetails" :title="i18n.processDetail">
                     <div class="content-wrap-detail">
                         <div class="content-wrap-from">
@@ -122,65 +181,6 @@
                             :loading="isTemplateLoading"
                             @handleSizeChange="onTemplateHandleSizeChange"
                             @handleIndexChange="onTemplateHandleIndexChange">
-                        </data-table-pagination>
-                    </div>
-                </bk-tabpanel>
-                <bk-tabpanel name="executionTime" :title="i18n.executionTime">
-                    <div class="content-wrap-detail">
-                        <div class="content-wrap-from">
-                            <div class="content-wrap-select">
-                                <label class="content-detail-label">{{i18n.taskStartTime}}</label>
-                                <bk-date-range
-                                    :quick-select="true"
-                                    :start-date="tableStartTime"
-                                    :end-date="tableEndTime"
-                                    :end-date-max="endDateMax"
-                                    @change="onAtomExecuteData">
-                                </bk-date-range>
-                            </div>
-                            <div class="content-wrap-select">
-                                <label class="content-detail-label">{{i18n.choiceBusiness}}</label>
-                                <bk-selector
-                                    :list="allBusinessList"
-                                    :display-key="'cc_name'"
-                                    :setting-name="'cc_id'"
-                                    :search-key="'cc_name'"
-                                    :setting-key="'cc_id'"
-                                    :selected.sync="selectedCcId"
-                                    :placeholder="i18n.choice"
-                                    :searchable="true"
-                                    :allow-clear="true"
-                                    @change="onAtomExecuteData"
-                                    @clear="onClearBizCcId"
-                                    @item-selected="onSelectedBizCcId">
-                                </bk-selector>
-                            </div>
-                            <div class="content-wrap-select">
-                                <label class="content-detail-label">{{i18n.choiceCategory}}</label>
-                                <bk-selector
-                                    :list="categorys"
-                                    :display-key="'name'"
-                                    :setting-name="'value'"
-                                    :search-key="'name'"
-                                    :setting-key="'value'"
-                                    :selected.sync="selectedCategory"
-                                    :placeholder="i18n.choice"
-                                    :searchable="true"
-                                    :allow-clear="true"
-                                    @change="onAtomExecuteData"
-                                    @clear="onClearCategory"
-                                    @item-selected="onSelectedCategory">
-                                </bk-selector>
-                            </div>
-                        </div>
-                        <data-table-pagination
-                            :data="executeData"
-                            :total="executeTotal"
-                            :columns="executeColumns"
-                            :pagination="executePagination"
-                            :loading="isExecutionLoading"
-                            @handleSizeChange="onExecuteHandleSizeChange"
-                            @handleIndexChange="onExecuteHandleIndexChange">
                         </data-table-pagination>
                     </div>
                 </bk-tabpanel>
@@ -372,7 +372,7 @@
                         align: 'center'
                     }
                 ],
-                tabName: 'processDetails',
+                tabName: 'executionTime',
                 nodePagination: {
                     // 分页操作
                     limit: this.nodeLimit,
