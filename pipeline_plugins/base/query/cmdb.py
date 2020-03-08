@@ -18,6 +18,7 @@ from django.http import JsonResponse
 from django.utils.translation import ugettext_lazy as _
 
 from gcloud.conf import settings
+from gcloud.utils.handlers import handle_api_error
 
 from pipeline_plugins.base.utils.adapter import cc_format_module_hosts
 from pipeline_plugins.base.utils.inject import supplier_account_inject
@@ -71,7 +72,9 @@ def cc_search_module(request, biz_cc_id, supplier_account):
     }
     cc_result = client.cc.search_module(cc_kwargs)
     if not cc_result['result']:
-        logger.warning("client.cc.search_module ERROR###biz_cc_id=%s"
-                       "###cc_result=%s" % (biz_cc_id, json.dumps(cc_result)))
-        return JsonResponse({'result': False, 'data': {}, 'message': cc_result['message']})
+        message = handle_api_error(system=_("配置平台(CMDB)"),
+                                   api_name='cc.search_module',
+                                   params=cc_kwargs,
+                                   result=cc_result)
+        return JsonResponse({'result': False, 'data': {}, 'message': message})
     return JsonResponse({'result': True, 'data': cc_result['data'], 'message': ''})
