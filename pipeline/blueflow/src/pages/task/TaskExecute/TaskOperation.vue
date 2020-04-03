@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 <template>
     <div class="task-operation">
@@ -277,15 +281,11 @@ export default {
 
         },
         nodeData () {
-            return {
-                rootNode: {
-                    id: this.instance_id,
-                    name: this.instanceName,
-                    pipeline: {
-                        activities: this.completePipelineData.activities
-                    }
-                }
-            }
+            return [{
+                id: this.instance_id,
+                name: this.instanceName,
+                children: this.getOrderedTree(this.completePipelineData)
+            }]
         },
         taskState () {
             return TASK_STATE_DICT[this.state]
@@ -829,14 +829,58 @@ export default {
                     return this.state === 'SUSPENDED'
                     break
                 case 'revoke':
-                    return (this.state === 'RUNNING' ||
+                    return this.isTopTask &&
+                        (this.state === 'RUNNING' ||
                         this.state === 'SUSPENDED' ||
                         this.state === 'NODE_SUSPENDED' ||
-                        this.state === 'FAILED') && this.isTopTask
+                        this.state === 'FAILED')
                     break
                 default:
                     break
             }
+        },
+        getOrderedTree (data) {
+            const fstLine = data.start_event.outgoing
+            const orderedData = this.retrieveLines(data, fstLine)
+            return orderedData
+        },
+        retrieveLines (data, line) {
+            let nodes = []
+            const {start_event, end_event, flows, activities, gateways} = data
+            const curNode = data.flows[line].target
+            const activityNode = activities[curNode]
+            if (activityNode) {
+                const node = Object.assign({}, activityNode)
+                if (node.pipeline) {
+                    node.children = this.getOrderedTree(node.pipeline)
+                }
+                nodes.push(node)
+                nodes = nodes.concat(this.retrieveLines(data, node.outgoing))
+            } else {
+                const gatewayNode = gateways[curNode]
+                if (gatewayNode) {
+                    const gatewayOutLine = gatewayNode.outgoing
+                    if (Array.isArray(gatewayOutLine)) {
+                        const gatewayLinkedNodes = []
+                        gatewayOutLine.forEach(line => {
+                            const linkedNode = activities[flows[line].target]
+                            if (linkedNode) {
+                                if (linkedNode.pipeline) {
+                                    linkedNode.children = this.getOrderedTree(linkedNode.pipeline)
+                                }
+                                gatewayLinkedNodes.push(linkedNode)
+                                nodes.push(linkedNode)
+                            } else {
+                                nodes = nodes.concat(this.retrieveLines(data, line))
+                            }
+                        })
+                        gatewayLinkedNodes.forEach(node => {
+                            nodes = nodes.concat(this.retrieveLines(data, node.outgoing))
+                        })
+                    }
+                }
+            }
+            return nodes
         },
         destroyTooltipInstance (id) {
             if (this.nodeTooltipInstance[id]) {

@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 <template>
     <div
@@ -15,7 +19,10 @@
             :name="name"
             :cc_id="cc_id"
             :common="common"
+            :template_id="template_id"
+            :isTemplateDataChanged="isTemplateDataChanged"
             :templateSaving="templateSaving"
+            :createTaskSaving="createTaskSaving"
             @onChangeName="onChangeName"
             @onSaveTemplate="onSaveTemplate">
         </ConfigBar>
@@ -130,6 +137,9 @@ export default {
         templateSaving: {
             type: Boolean
         },
+        createTaskSaving: {
+            type: Boolean
+        },
         atomTypeList: {
             type: Object,
             required: false
@@ -154,37 +164,32 @@ export default {
             type: String,
             required: false
         },
+        template_id: {
+            type: String,
+            required: false
+        },
         common: {
             type: String,
             required: false
         },
+        isTemplateDataChanged: {
+            type: Boolean
+        },
         isSelectNode: {
             type: Boolean,
-            required: false,
-            default () {
-                return false
-            }
+            default: false
         },
         selectNodeType: {
             type: Boolean,
-            required: false,
-            default () {
-                return false
-            }
+            default: false
         },
         isPreviewMode: {
             type: Boolean,
-            required: false,
-            default () {
-                return false
-            }
+            default: false
         },
         isSelectAllNode: {
             type: Boolean,
-            required: false,
-            default () {
-                return false
-            }
+            default: false
         }
     },
     components: {
@@ -204,7 +209,7 @@ export default {
                 choiceAll: gettext('全选'),
                 cancelChoiceAll: gettext('反选'),
                 added: gettext('已添加'),
-                node: gettext('个节点')
+                node: gettext('个任务节点')
             },
             zoomRadio: 1,
             nodeTypeUniqueInCanvas: ['startpoint', 'endpoint'],
@@ -518,7 +523,7 @@ export default {
         onChangeName (name) {
             this.$emit('onChangeName', name)
         },
-        onSaveTemplate () {
+        onSaveTemplate (saveAndCreate) {
             const validateMessage = validatePipeline.isDataValid(this.canvasData)
             if (!validateMessage.result) {
                 this.$bkMessage({
@@ -527,7 +532,7 @@ export default {
                 })
                 return false
             }
-            this.$emit('onSaveTemplate')
+            this.$emit('onSaveTemplate', saveAndCreate)
         },
         onNewDraft (message) {
             this.$emit('onNewDraft', message)
@@ -677,5 +682,3 @@ export default {
     }
 }
 </style>
-
-

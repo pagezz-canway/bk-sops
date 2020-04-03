@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 <template>
     <div class="static-ip">
@@ -50,7 +54,7 @@
                     <tbody>
                         <template v-if="listInPage.length">
                             <tr v-for="item in listInPage" :key="item.bk_host_d">
-                                <td>{{item.bk_host_name}}</td>
+                                <td>{{item.cloud[0] && item.cloud[0].bk_inst_name}}}</td>
                                 <td>{{item.bk_host_innerip}}</td>
                                 <td :class="item.agent ? 'agent-normal' : 'agent-failed'">{{item.agent ? 'Agent' + i18n.normal : 'Agent' + i18n.error}}</td>
                                 <td>
@@ -64,7 +68,11 @@
                         </template>
                         <tr v-else>
                             <td class="static-ip-empty" colspan="4">
-                                <span v-if="!isSearchMode && editable">{{i18n.noDataClick}}<a class="add-ip-btn" @click="onAddPanelShow">{{i18n.add}}</a>{{i18n.server}}</span>
+                                <span v-if="!isSearchMode && editable">
+                                    {{i18n.noDataClick}}
+                                    <a class="add-ip-btn" @click="onAddPanelShow">{{i18n.add}}</a>
+                                    {{i18n.server}}
+                                </span>
                                 <span v-else>{{i18n.noData}}</span>
                             </td>
                         </tr>
@@ -269,7 +277,7 @@ export default {
     position: relative;
     margin: 20px 0;
     .bk-dropdown-menu, .trigger-btn {
-        width: 145px;
+        width: 162px;
     }
 }
 .operation-btn {

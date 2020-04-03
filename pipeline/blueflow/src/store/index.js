@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -48,7 +52,8 @@ const store = new Vuex.Store({
         isSuperUser: window.IS_SUPERUSER === 1,
         v1_import_flag: window.IMPORT_V1_FLAG,
         rsa_pub_key: window.RSA_PUB_KEY,
-        businessTimezone: window.BUSINESS_TIMEZONE
+        businessTimezone: window.BUSINESS_TIMEZONE,
+        allBusinessList: []
     },
     mutations: {
         setAppId (state, id) {
@@ -77,12 +82,19 @@ const store = new Vuex.Store({
         },
         setBusinessTimezone (state, data) {
             state.businessTimezone = data
+        },
+        setAllBusinessList (state, data) {
+            state.allBusinessList = data
         }
     },
     actions: {
-        getBizList ({commit}) {
-            api.getBizList().then(response => {
-                commit('setBizList', response.data.objects)
+        getBizList ({commit}, isAll) {
+            api.getBizList(isAll).then(response => {
+                if (isAll) {
+                    commit('setAllBusinessList', response.data.objects)
+                } else {
+                    commit('setBizList', response.data.objects)
+                }
             })
         },
         changeDefaultBiz ({commit}, ccId) {

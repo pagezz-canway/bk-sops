@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+Edition) available.
 Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-""" # noqa
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+"""
 
 import re
 import datetime
@@ -741,9 +745,15 @@ class TaskFlowInstanceManager(models.Manager, managermixins.ClassificationCountM
         try:
             result = pipeline_api.activity_callback(activity_id=act_id, callback_data=data)
         except Exception as e:
-            return False, e.message
+            return {
+                'result': False,
+                'message': e.message
+            }
 
-        return result.result, result.message
+        return {
+            'result': result.result,
+            'message': result.message
+        }
 
 
 class TaskFlowInstance(models.Model):
@@ -1227,7 +1237,9 @@ class TaskFlowInstance(models.Model):
             'start_time': format_datetime(self.start_time),
             'finish_time': format_datetime(self.finish_time),
             'executor': self.executor,
-            'elapsed_time': self.elapsed_time
+            'elapsed_time': self.elapsed_time,
+            'pipeline_tree': self.pipeline_tree,
+            'task_url': self.url
         }
         exec_data = self.pipeline_instance.execution_data
         # inputs data
@@ -1247,3 +1259,12 @@ class TaskFlowInstance(models.Model):
             'ex_data': outputs.get('ex_data', '')
         })
         return data
+
+    def callback(self, act_id, data):
+        if not self.has_node(act_id):
+            return {
+                'result': False,
+                'message': 'task[{tid}] does not have node[{nid}]'.format(tid=self.id, nid=act_id)
+            }
+
+        return TaskFlowInstance.objects.callback(act_id, data)

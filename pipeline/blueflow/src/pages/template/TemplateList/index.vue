@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 <template>
     <div class="template-container">
@@ -109,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="item in templateList" :key="item.id">
+                        <tr v-for="item in listData" :key="item.id">
                             <td class="template-id">{{item.id}}</td>
                             <td class="template-name">
                                 <router-link
@@ -191,7 +195,7 @@
                                 </bk-dropdown-menu>
                             </td>
                         </tr>
-                        <tr v-if="!templateList || !templateList.length" class="empty-tr">
+                        <tr v-if="!listData || !listData.length" class="empty-tr">
                             <td colspan="7">
                                 <div class="empty-data"><NoData :message="i18n.empty" /></div>
                             </td>
@@ -368,10 +372,14 @@ export default {
         ...mapState({
             'site_url': state => state.site_url,
             'templateList': state => state.templateList.templateListData,
+            'commonTemplateData': state => state.templateList.commonTemplateData,
             'businessBaseInfo': state => state.template.businessBaseInfo,
             'v1_import_flag': state => state.v1_import_flag,
             'businessTimezone': state => state.businessTimezone
-        })
+        }),
+        listData () {
+            return this.common === 1 ? this.commonTemplateData : this.templateList
+        }
     },
     created () {
         this.getTemplateList()
@@ -400,6 +408,7 @@ export default {
                 this.editStartTime = undefined
             }
             this.listLoading = true
+            const isCommon = this.common === 1
             try {
                 const data = {
                     limit: this.countPerPage,
@@ -411,7 +420,7 @@ export default {
                     subprocess_has_update: this.isSubprocessUpdated,
                     has_subprocess: this.isHasSubprocess
                 }
-                if (this.templateType === 'common') {
+                if (isCommon) {
                     // 公共流程
                     data['common'] = 1
                     this.isNewTaskCommonTemplate = true
@@ -431,7 +440,7 @@ export default {
                 }
                 const templateListData = await this.loadTemplateList(data)
                 const list = templateListData.objects
-                this.setTemplateListData(list)
+                this.setTemplateListData({list, isCommon})
                 this.totalCount = templateListData.meta.total_count
                 const totalPage = Math.ceil( this.totalCount / this.countPerPage)
                 if (!totalPage) {

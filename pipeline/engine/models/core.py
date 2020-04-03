@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+Edition) available.
 Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 http://opensource.org/licenses/MIT
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-""" # noqa
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+"""
 
 from __future__ import absolute_import
 import logging
@@ -31,7 +35,9 @@ from pipeline.engine.models.fields import IOField
 from pipeline.conf import settings as pipeline_settings
 
 logger = logging.getLogger('celery')
+
 RERUN_MAX_LIMIT = pipeline_settings.PIPELINE_RERUN_MAX_TIMES
+NAME_MAX_LENGTH = 64
 
 
 class ProcessSnapshotManager(models.Manager):
@@ -690,8 +696,8 @@ class StatusManager(models.Manager):
 
     def prepare_for_pipeline(self, pipeline):
         cls_str = str(pipeline.__class__)
-        cls_name = pipeline.__class__.__name__[:64]
-        self.create(id=pipeline.id, state=states.READY, name=cls_str if len(cls_str) <= 64 else cls_name)
+        cls_name = pipeline.__class__.__name__[:NAME_MAX_LENGTH]
+        self.create(id=pipeline.id, state=states.READY, name=cls_str if len(cls_str) <= NAME_MAX_LENGTH else cls_name)
 
     def fail(self, node, ex_data):
         action_res = self.transit(node.id, states.FAILED)
@@ -803,7 +809,7 @@ class StatusManager(models.Manager):
 class Status(models.Model):
     id = models.CharField(_(u"节点 ID"), unique=True, primary_key=True, max_length=32)
     state = models.CharField(_(u"状态"), max_length=10)
-    name = models.CharField(_(u"节点名称"), max_length=64, default='')
+    name = models.CharField(_(u"节点名称"), max_length=NAME_MAX_LENGTH, default='')
     retry = models.IntegerField(_(u"重试次数"), default=0)
     loop = models.IntegerField(_(u"循环次数"), default=1)
     skip = models.BooleanField(_(u"是否跳过"), default=False)
@@ -942,7 +948,7 @@ class ScheduleServiceManager(models.Manager):
 class ScheduleService(models.Model):
     SCHEDULE_ID_SPLIT_DIVISION = 32
 
-    id = models.CharField(_(u"ID 节点ID+version"), max_length=64, unique=True, primary_key=True)
+    id = models.CharField(_(u"ID 节点ID+version"), max_length=NAME_MAX_LENGTH, unique=True, primary_key=True)
     activity_id = models.CharField(_(u"节点 ID"), max_length=32, db_index=True)
     process_id = models.CharField(_(u"Pipeline 进程 ID"), max_length=32)
     schedule_times = models.IntegerField(_(u"被调度次数"), default=0)
@@ -1069,7 +1075,7 @@ class ScheduleCeleryTaskManager(models.Manager):
 
 
 class ScheduleCeleryTask(models.Model):
-    schedule_id = models.CharField(_(u"schedule ID"), max_length=64, unique=True, db_index=True)
+    schedule_id = models.CharField(_(u"schedule ID"), max_length=NAME_MAX_LENGTH, unique=True, db_index=True)
     celery_task_id = models.CharField(_(u"celery 任务 ID"), max_length=40, default='')
 
     objects = ScheduleCeleryTaskManager()

@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 <template>
     <ul :class="['node-tree', 'tree-level-' + level]">
@@ -15,14 +19,14 @@
                 }"
                 @click.stop="onSelectNode(item, true)">
                 <span class="node-icon">
-                    <i :class="item.pipeline ? 'common-icon-node-subflow' : 'common-icon-node-tasknode'"></i>
+                    <i :class="item.children ? 'common-icon-node-subflow' : 'common-icon-node-tasknode'"></i>
                 </span>
                 <span class="name" :title="item.name">{{item.name}}</span>
             </h4>
             <NodeTree
-                v-if="item.pipeline"
+                v-if="item.children"
                 class="sub-tree"
-                :data="item.pipeline.activities"
+                :data="item.children"
                 :selectedFlowPath="selectedFlowPath"
                 :heirarchy="heirarchy ? `${heirarchy}.${item.id}` : String(item.id)"
                 :level="level + 1"
@@ -37,9 +41,9 @@ export default {
     name: 'NodeTree',
     props: {
         data: {
-            type: Object,
+            type: Array,
             default () {
-                return {}
+                return []
             }
         },
         selectedFlowPath: {
@@ -67,7 +71,7 @@ export default {
         },
         onSelectNode (node, isClick, type) {
             let nodeHeirarchy = node
-            const nodeType = node.pipeline ? 'subflow' : 'tasknode'
+            const nodeType = node.children ? 'subflow' : 'tasknode'
             if (isClick) {
                 nodeHeirarchy = this.heirarchy ? `${this.heirarchy}.${node.id}` : String(node.id)
             }
@@ -115,6 +119,7 @@ export default {
         display: inline-block;
         margin: 0;
         padding-left: 20px;
+        width: 140px;
         height: 30px;
         line-height: 30px;
         font-size: 12px;
@@ -136,7 +141,7 @@ export default {
         .name {
             float: left;
             margin-left: 4px;
-            max-width: 85px;
+            max-width: 90px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;

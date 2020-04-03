@@ -1,9 +1,13 @@
 /**
-* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+* Tencent is pleased to support the open source community by making 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community
+* Edition) available.
 * Copyright (C) 2017-2019 THL A29 Limited, a Tencent company. All rights reserved.
-* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+* Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
 * http://opensource.org/licenses/MIT
-* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+* Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+* an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+* specific language governing permissions and limitations under the License.
 */
 <template>
     <div class="render-form">
@@ -232,5 +236,37 @@ export default {
     }
 }
 </script>
-
-
+<style lang="scss" scoped>
+.render-form {
+    /deep/ .rf-group-name {
+        margin-bottom: 12px;
+        .name {
+            display: inline-block;
+            margin: 0;
+            margin-bottom: -1px;
+            padding: 5px 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #313238;
+        }
+        &:before {
+            content: '';
+            display: inline-block;
+            position: relative;
+            top: 4px;
+            width: 2px;
+            height: 20px;
+            background: #a3c5fd;
+        }
+        .rf-group-desc {
+            color: #c4c6cc;
+            font-size: 16px;
+            cursor: pointer;
+            &:hover {
+                color: #f4aa1a;
+            }
+        }
+    }
+    
+}
+</style>
